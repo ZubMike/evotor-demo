@@ -1,0 +1,5 @@
+driverClass: org.postgresql.Driver
+dialect: org.hibernate.dialect.PostgreSQLDialect
+url: jdbc:postgresql://localhost/postgres
+user: postgres
+password: 123 
