@@ -2,7 +2,8 @@ create table users (
     id serial,
     login varchar(32),
     password varchar(32),
-    balance decimal,
+    balance decimal not null,
+    unique (login), 
     primary key (id)
 );
 

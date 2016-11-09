@@ -5,10 +5,12 @@ import javax.persistence.NoResultException;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.exception.ConstraintViolationException;
 
 import ru.zubmike.demo.evotor.dao.UserDAO;
 import ru.zubmike.demo.evotor.types.domain.User;
 import ru.zubmike.demo.evotor.utils.DataSourceException;
+import ru.zubmike.demo.evotor.utils.DuplicateUserException;
 
 public class UserDAOImpl extends AbstractDAO implements UserDAO {
 
@@ -18,7 +20,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 	}
 
 	@Override
-	public int addUser(User user) throws DataSourceException {
+	public int addUser(User user) throws DataSourceException, DuplicateUserException {
 		Session session = null;
 		try {
 			session = openSession();
@@ -26,6 +28,14 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 			int id = (int) session.save(user);
 			commitTransaction(session);
 			return id;
+		} catch (ConstraintViolationException e) {
+			rollbackTransaction(session);
+			String sqlState = e.getSQLException().getSQLState();
+			if (DUPLICATE_SQL_STATES.contains(sqlState)) {
+				throw new DuplicateUserException();	
+			} else {
+				throw new DataSourceException(e);
+			}
 		} catch (Exception e) {
 			rollbackTransaction(session);
 			throw new DataSourceException(e);

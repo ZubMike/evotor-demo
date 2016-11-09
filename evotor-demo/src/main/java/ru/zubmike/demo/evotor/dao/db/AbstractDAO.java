@@ -1,9 +1,19 @@
 package ru.zubmike.demo.evotor.dao.db;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class AbstractDAO {
+
+	protected static final Set<String> DUPLICATE_SQL_STATES = new HashSet<>();
+
+	{
+		DUPLICATE_SQL_STATES.add("23505"); // PostgreSQL
+		DUPLICATE_SQL_STATES.add("23000"); // MySql
+	}
 
 	private final SessionFactory sessionFactory;
 

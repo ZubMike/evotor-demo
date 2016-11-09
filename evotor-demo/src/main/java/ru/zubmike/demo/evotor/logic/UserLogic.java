@@ -13,6 +13,7 @@ import ru.zubmike.demo.evotor.types.dto.ResponseCode;
 import ru.zubmike.demo.evotor.types.dto.SimpleResponse;
 import ru.zubmike.demo.evotor.types.dto.UserRequest;
 import ru.zubmike.demo.evotor.utils.DataSourceException;
+import ru.zubmike.demo.evotor.utils.DuplicateUserException;
 
 public class UserLogic {
 
@@ -52,13 +53,15 @@ public class UserLogic {
 			} else {
 				return new SimpleResponse(ResponseCode.USER_ALREADY_EXISTS.getValue());
 			}
+		} catch (DuplicateUserException e) {
+			return new SimpleResponse(ResponseCode.USER_ALREADY_EXISTS.getValue());
 		} catch (DataSourceException e) {
 			LOGGER.error(e.getMessage(), e);
 			return new SimpleResponse(ResponseCode.INTERNAL_ERROR.getValue());
 		}
 	}
 
-	private void addUser(UserRequest request) throws DataSourceException {
+	private void addUser(UserRequest request) throws DataSourceException, DuplicateUserException {
 		User user = new User(request.getLogin(), request.getPassword(), DEFAULT_BALANCE);
 		userDAO.addUser(user);
 	}
